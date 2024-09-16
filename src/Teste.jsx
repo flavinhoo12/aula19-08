@@ -1,4 +1,4 @@
-import { useReducer } from "react"
+import { useEffect, useReducer } from "react"
 
 const initialState = { nome: '', autenticado: false }
 
@@ -27,13 +27,16 @@ const reducer = (state, { type, payload }) => {
 }
 
 export default function () {
-    const [state, dispath] = useReducer(reducer, initialState)
-
-    console.log(state)
+    const localState = JSON.parse(localStorage.getItem('state'))
+    const [state, dispath] = useReducer(reducer, localState || initialState)
 
     const signIn = () => dispath(login("Flávio"))
     const signOut = () => dispath(logout())
     const changeNome = ()=> dispath(change("Azzi"))
+
+    useEffect(() => {
+        localStorage.setItem('state', JSON.stringify(state))
+    }, [state])
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             {state.autenticado ? state.nome + ' está autenticado!' : 'Você não está autenticado!'}
